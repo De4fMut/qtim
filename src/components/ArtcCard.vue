@@ -1,16 +1,33 @@
 <script setup lang="ts">
-// import { ref, Ref } from 'vue'
+import LoadingComponent from "@/components/LoadingComponent.vue";
+import ErrorComponent from "@/components/ErrorComponent.vue";
+import def from "@/assets/svg/qtim.svg";
+
+import { ref } from 'vue'
 import { Post } from '@/types'
 
 const props = defineProps<{
-    post: Post | null
+    post: Post
 }>()
+
+const loading = ref(true);
+const error = ref(false);
+const img = new Image();
+
+img.src = props.post.image;
+img.onload = () => (loading.value = false);
+img.onerror = () => {
+    img.src = def;
+    error.value = true;
+};
 </script>
 
 <template>
     <div class="card--wrapper">
-        <div >
-            <img class="card--img" :src="props.post?.image" :alt="props.post?.title">
+        <div>
+            <img v-if="!loading && !error" class="card--img" :src="props.post?.image" :alt="props.post?.title">
+            <LoadingComponent v-if="loading && !error" class="card--img"></LoadingComponent>
+            <ErrorComponent v-if="!loading && error" class="card--img"></ErrorComponent>
         </div>
         <div class="card--desc">
             <p>About</p>
@@ -23,7 +40,6 @@ const props = defineProps<{
 
 .card--img{
     width: 1216px;
-    /* max-width: ; */
     height: 700px;
     object-fit: cover;
 }

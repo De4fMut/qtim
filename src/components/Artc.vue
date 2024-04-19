@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import LoadingComponent from "@/components/LoadingComponent.vue";
+import ErrorComponent from "@/components/ErrorComponent.vue";
+import def from "@/assets/svg/qtim.svg";
+
 import { ref, Ref } from "vue";
 import { Post } from "@/types";
 
@@ -14,6 +18,21 @@ function onOver() {
 function onLeave() {
     over.value = false;
 }
+
+const loading = ref(true);
+const error = ref(false);
+const img = new Image();
+
+img.src = props.post.image;
+// img.onload = () => setTimeout(() => {
+//     (loading.value = false);
+// }, 1000);
+img.onload = () => (loading.value = false);
+img.onerror = () => {
+    img.src = def;
+    error.value = true;
+};
+
 </script>
 
 <template>
@@ -21,11 +40,21 @@ function onLeave() {
         class="post"
         @mouseenter="onOver"
         @mouseleave="onLeave"
-        @click="$router.push(`/posts/${props.post.id}`)"
+        @click="props.post ? $router.push(`/posts/${props.post.id}`) : null"
         :style="{ cursor: over ? 'pointer' : 'auto' }"
     >
         <div class="post--img">
-            <img :src="props.post.image" :alt="props.post.title" />
+                <img
+                v-if="!loading && !error"
+                    :src="img.src"
+                    :alt="props.post.title"
+                    :class="{
+                        error,
+                        default: !error,
+                    }"
+                />
+                <LoadingComponent v-if="loading && !error"></LoadingComponent>
+                <ErrorComponent v-if="!loading && error"></ErrorComponent>
         </div>
         <div class="post--preview">
             <p>{{ props.post.preview }}</p>
@@ -33,6 +62,7 @@ function onLeave() {
         <div class="post--link" v-show="over">
             <router-link :to="`/posts/${props.post.id}`">Read more</router-link>
         </div>
+        <slot> </slot>
     </div>
 </template>
 
@@ -50,13 +80,13 @@ function onLeave() {
 .post--img {
     height: 280px;
     width: 280px;
-    object-fit: cover;
+    /* object-fit: cover; */
     margin-bottom: 25px;
 }
 
-.post--img img {
-    height: 280px;
-    width: 280px;
+.default {
+    height: 100%;
+    width: 100%;
     object-fit: cover;
     /* margin-bottom: 25px; */
 }

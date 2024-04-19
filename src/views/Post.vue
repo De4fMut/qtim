@@ -28,6 +28,6 @@ fetch(`https://6082e3545dbd2c001757abf5.mockapi.io/qtim-test-work/posts/${Number
 <template>
     <div class="content--wrapper">
         <MyTitle>At Test & Code, you can learn about software design</MyTitle>
-        <ArtcCard :post="post"></ArtcCard>
+        <ArtcCard v-if="post" :post="post"></ArtcCard>
     </div>
 </template>

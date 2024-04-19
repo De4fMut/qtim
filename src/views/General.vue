@@ -5,14 +5,13 @@ import ArtcGroup from '@/components/ArtcGroup.vue'
 import PaginationGroup from '@/components/PaginationGroup.vue'
 import { Post } from '@/types'
 
-
 const posts: Ref<Post[] | null> = ref(null);
 const displayedPosts = 8
 const totalPosts = 86 // здесь планировалось получать ответ от сервера с количеством постов
 const currentPage = ref(1)
 
-function fetchPosts(){
-    fetch(`https://6082e3545dbd2c001757abf5.mockapi.io/qtim-test-work/posts/?page=${currentPage.value}&limit=${displayedPosts}`, {
+async function fetchPosts(){
+    await fetch(`https://6082e3545dbd2c001757abf5.mockapi.io/qtim-test-work/posts/?page=${currentPage.value}&limit=${displayedPosts}`, {
     method: "GET",
     headers: { "content-type": "application/json" },
 })
